@@ -1,8 +1,10 @@
 import clsx from 'clsx'
 import Link from 'next/link'
+import { useState } from 'react'
 
 import {
   ArrowTopRightOnSquareIcon,
+  CheckIcon,
   ClipboardDocumentIcon,
   EllipsisVerticalIcon,
   QrCodeIcon,
@@ -16,12 +18,25 @@ export interface IProps {
 }
 
 export default function RecentLink({ link, className }: IProps) {
+  const [copySuccess, setCopySuccess] = useState(false)
+
   const hostname = process.env.NODE_ENV === 'development' ? 'localhost:3000' : 'zipurl.co'
   const shortLink = `${hostname}/${link.alias}`
 
   const handleCopyToClipboard = () => {
+    setCopySuccess(true)
     navigator.clipboard.writeText(shortLink)
+    setTimeout(() => {
+      setCopySuccess(false)
+    }, 2000)
   }
+
+  const renderCopyToClipboard = () =>
+    copySuccess ? (
+      <CheckIcon className="h-5 w-5 text-blue-500" />
+    ) : (
+      <ClipboardDocumentIcon className="h-5 w-5" />
+    )
 
   return (
     <div className={clsx('mt-6 flow-root max-w-2/5', className)}>
@@ -47,10 +62,12 @@ export default function RecentLink({ link, className }: IProps) {
             <div className="flex items-center gap-2">
               <Link
                 href=""
-                className="rounded-md border p-2 hover:bg-gray-100 hidden lg:block"
+                className={clsx({
+                  'rounded-md border p-2 hover:bg-gray-100 hidden lg:block': true,
+                })}
                 onClick={handleCopyToClipboard}
               >
-                <ClipboardDocumentIcon className="h-5 w-5" />
+                {renderCopyToClipboard()}
               </Link>
               <Link href="" className="rounded-md border p-2 hover:bg-gray-100 hidden lg:block">
                 <QrCodeIcon className="h-5 w-5" />
@@ -64,7 +81,7 @@ export default function RecentLink({ link, className }: IProps) {
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content>
                   <DropdownMenu.Item onClick={handleCopyToClipboard}>
-                    <ClipboardDocumentIcon className="h-5 w-5" />
+                    {renderCopyToClipboard()}
                   </DropdownMenu.Item>
                   <DropdownMenu.Separator />
                   <DropdownMenu.Item>
