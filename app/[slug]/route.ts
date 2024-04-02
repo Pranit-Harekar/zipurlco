@@ -1,14 +1,11 @@
-import { useRouter } from 'next/router'
-import { NextResponse } from 'next/server'
-import { sql } from '@vercel/postgres'
+import { NextRequest, NextResponse } from 'next/server'
+import prisma from '@/lib/prisma'
 
-// Exporting an async GET function that takes the params object in the second argument
-export const GET = async () => {
-  const router = useRouter()
-  const slug = router.query.slug
+export const GET = async (req: NextRequest) => {
+  const slug = req.url.split('/').pop()
 
   if (!slug || typeof slug !== 'string') {
-    return new Response(`<h1>/Invalid link ${router.pathname}</h1>`, {
+    return new Response(`<h1>/Invalid link ${slug}</h1>`, {
       status: 400,
       headers: {
         'content-type': 'text/html',
@@ -16,25 +13,34 @@ export const GET = async () => {
     })
   }
 
-  // Making a SQL query to select a link from the links table where the alias matches the provided slug
-  // The result is limited to 1 row
-  const { rows } = await sql`SELECT * FROM links WHERE alias=${slug} LIMIT 1`
+  // Find the first record where the alias matches the slug
+  const link = await prisma.link.findFirst({
+    where: {
+      alias: slug,
+    },
+  })
 
-  // If no rows are returned, return a response indicating the slug is not in the record
-  if (rows.length === 0) {
-    return new Response(`<h1>/${slug} is not in our record</h1>`, {
-      status: 400,
+  if (!link) {
+    return new Response(`<h1>Link not found</h1>`, {
+      status: 404,
       headers: {
         'content-type': 'text/html',
       },
     })
   }
 
-  // If a row is returned, increment the visit_count for the link with the provided slug
-  if (rows[0]) {
-    await sql`UPDATE links SET visit_count = visit_count + 1 WHERE alias = ${slug}`
-  }
+  // update link count
+  await prisma.link.update({
+    where: {
+      id: link.id,
+    },
+    data: {
+      clicks: {
+        increment: 1,
+      },
+    },
+  })
 
   // Redirect to the target of the first row (the selected link)
-  return NextResponse.redirect(rows[0].target, 302)
+  return NextResponse.redirect(link.target, 302)
 }

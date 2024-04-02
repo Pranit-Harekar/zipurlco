@@ -20,7 +20,7 @@ export default function Page() {
             <span className="text-lg md:text-2xl">
               ZipURL makes it easy to <span className="bg-blue-100">create</span>,
               <span className="bg-blue-100">manage</span>, and{' '}
-              <span className="bg-blue-100">share</span> shortened URLs. And it&apos;s{' '}
+              <span className="bg-blue-100">share</span> shortened URLs. Start for{' '}
               <span className="underline decoration-4 decoration-blue-500">FREE!</span>
             </span>
           </p>
