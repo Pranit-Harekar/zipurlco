@@ -1,6 +1,10 @@
+import '@radix-ui/themes/styles.css'
 import '@/app/ui/global.css'
-import { inter } from '@/app/ui/fonts'
+
 import { Metadata } from 'next'
+
+import { inter } from '@/app/ui/fonts'
+import { Theme } from '@radix-ui/themes'
 
 export const metadata: Metadata = {
   title: {
@@ -15,7 +19,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} antialiased`}>{children}</body>
+      <body className={`${inter.className} antialiased`}>
+        <Theme>{children}</Theme>
+      </body>
     </html>
   )
 }
