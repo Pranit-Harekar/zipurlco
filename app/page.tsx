@@ -2,8 +2,8 @@ import Image from 'next/image'
 
 import { lusitana } from '@/app/ui/fonts'
 
-import ShortenUrlForm from './ui/shorten-url-form'
-import ZipUrlLogo from './ui/zipurl-logo'
+import ZipUrlLogo from './ui/components/Logo'
+import ShortenUrlForm from './ui/components/ShortenUrlForm'
 
 export default function Page() {
   return (
@@ -20,7 +20,7 @@ export default function Page() {
             <span className="text-lg md:text-2xl">
               ZipURL makes it easy to <span className="bg-blue-100">create</span>,
               <span className="bg-blue-100">manage</span>, and{' '}
-              <span className="bg-blue-100">share</span> shortened URLs. Start for{' '}
+              <span className="bg-blue-100">share</span> shortened URLs. And it&apos;s{' '}
               <span className="underline decoration-4 decoration-blue-500">FREE!</span>
             </span>
           </p>

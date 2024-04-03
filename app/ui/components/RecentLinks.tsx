@@ -12,6 +12,8 @@ import {
 import { Link as PrismaLink } from '@prisma/client'
 import { DropdownMenu } from '@radix-ui/themes'
 
+import { QRDialog } from './QRDialog'
+
 export interface IProps {
   link: PrismaLink
   className: string
@@ -19,6 +21,7 @@ export interface IProps {
 
 export default function RecentLink({ link, className }: IProps) {
   const [copySuccess, setCopySuccess] = useState(false)
+  const [qrDialogOpen, setQrDialogOpen] = useState(false)
 
   const hostname = process.env.NODE_ENV === 'development' ? 'localhost:3000' : 'zipurl.co'
   const shortLink = `${hostname}/${link.alias}`
@@ -42,7 +45,7 @@ export default function RecentLink({ link, className }: IProps) {
     <div className={clsx('mt-6 flow-root max-w-2/5', className)}>
       <div className="inline-block min-w-full align-middle">
         <div className="rounded-lg bg-gray-50 py-2 md:pt-0">
-          <div key={link.alias} className="flex justify-between py-2 border-b border-gray-200">
+          <div key={link.alias} className="flex justify-between py-2">
             <div className="flex flex-col space-y-2">
               <Link href={`/${link.alias}`} target="_blank" className="text-blue-800 font-bold">
                 <span className="flex flex-row gap-2 truncate max-w-56 md:max-w-64 lg:max-w-80 xl:max-w-96">
@@ -69,9 +72,23 @@ export default function RecentLink({ link, className }: IProps) {
               >
                 {renderCopyToClipboard()}
               </Link>
-              <Link href="" className="rounded-md border p-2 hover:bg-gray-100 hidden lg:block">
+              <Link
+                href=""
+                className="rounded-md border p-2 hover:bg-gray-100 hidden lg:block"
+                onClick={() => {
+                  setQrDialogOpen(true)
+                }}
+              >
                 <QrCodeIcon className="h-5 w-5" />
               </Link>
+
+              <QRDialog
+                shortUrl={shortLink}
+                alias={link.alias}
+                open={qrDialogOpen}
+                onClose={() => setQrDialogOpen(false)}
+                setOpen={setQrDialogOpen}
+              />
 
               <DropdownMenu.Root>
                 <DropdownMenu.Trigger className="block lg:hidden">
@@ -84,7 +101,11 @@ export default function RecentLink({ link, className }: IProps) {
                     {renderCopyToClipboard()}
                   </DropdownMenu.Item>
                   <DropdownMenu.Separator />
-                  <DropdownMenu.Item>
+                  <DropdownMenu.Item
+                    onClick={() => {
+                      setQrDialogOpen(true)
+                    }}
+                  >
                     <QrCodeIcon className="h-5 w-5" />
                   </DropdownMenu.Item>
                 </DropdownMenu.Content>

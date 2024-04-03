@@ -2,16 +2,15 @@
 
 import { useFormState, useFormStatus } from 'react-dom'
 
-import { State, shortenUrl } from '@/app/lib/actions'
-import { lusitana } from '@/app/ui/fonts'
+import { shortenUrl, State } from '@/app/lib/actions'
 import { LinkIcon, SparklesIcon } from '@heroicons/react/24/outline'
 
-import { Button } from './button'
-import RecentLinks from './recent-links'
+import { Button } from './Button'
+import RecentLinks from './RecentLinks'
 
 export default function ShortenUrlForm() {
   const initialState = {
-    // For testing purposes -
+    // For testing purposes
     // link: {
     //   id: 'cluh4z1tf0000vdc3wurr6zxn',
     //   createdAt: new Date('2024-04-01T15:59:54.868Z'),
@@ -27,13 +26,8 @@ export default function ShortenUrlForm() {
   const [state, dispatch] = useFormState<State, FormData>(shortenUrl, initialState)
 
   return (
-    <form action={dispatch} className="space-y-3">
-      <div className="flex-1 rounded-lg bg-gray-50 pb-4 pt-8">
-        <p
-          className={`${lusitana.className} text-xl text-gray-800 pb-4 md:text-2xl md:leading-normal`}
-        >
-          Shorten your link
-        </p>
+    <form action={dispatch} className="space-y-2">
+      <div className="flex-1 rounded-lg bg-gray-50 pb-4 pt-4">
         <div className="w-full">
           <div>
             <div className="relative">
