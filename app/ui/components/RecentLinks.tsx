@@ -1,5 +1,4 @@
 import clsx from 'clsx'
-import Link from 'next/link'
 import { useState } from 'react'
 
 import {
@@ -10,7 +9,15 @@ import {
   QrCodeIcon,
 } from '@heroicons/react/24/outline'
 import { Link as PrismaLink } from '@prisma/client'
-import { DropdownMenu } from '@radix-ui/themes'
+import {
+  Container,
+  DropdownMenu,
+  Flex,
+  IconButton,
+  Link,
+  Separator,
+  Skeleton,
+} from '@radix-ui/themes'
 
 import { QRDialog } from './QRDialog'
 
@@ -35,82 +42,72 @@ export default function RecentLink({ link, className }: IProps) {
   }
 
   const renderCopyToClipboard = () =>
-    copySuccess ? (
-      <CheckIcon className="h-5 w-5 text-blue-500" />
-    ) : (
-      <ClipboardDocumentIcon className="h-5 w-5" />
-    )
+    copySuccess ? <CheckIcon className="h-5 w-5" /> : <ClipboardDocumentIcon className="h-5 w-5" />
 
   return (
     <div className={clsx('mt-6 flow-root max-w-2/5', className)}>
       <div className="inline-block min-w-full align-middle">
         <div className="rounded-lg bg-gray-50 py-2 md:pt-0">
-          <div key={link.alias} className="flex justify-between py-2">
-            <div className="flex flex-col space-y-2">
-              <Link href={`/${link.alias}`} target="_blank" className="text-blue-800 font-bold">
-                <span className="flex flex-row gap-2 truncate max-w-56 md:max-w-64 lg:max-w-80 xl:max-w-96">
-                  {shortLink}
-                  <ArrowTopRightOnSquareIcon className="h-5 w-5" />
-                </span>
+          <div key={link.alias} className="flex justify-between">
+            {/* Links */}
+            <div className="flex flex-col space-y-2 truncate max-w-56 md:max-w-64 lg:max-w-80 xl:max-w-96">
+              <Link href={`/${link.alias}`} target="_blank" size="4">
+                {shortLink}
               </Link>
-              <Link
-                href={link.target}
-                target="_blank"
-                className="text-sm text-gray-500 hover:underline truncate max-w-56 md:max-w-64 lg:max-w-80 xl:max-w-96"
-              >
+              <Link href={link.target} target="_blank" size="2" color="gray" underline="always">
                 {link.target}
               </Link>
             </div>
 
-            <div className="flex items-center gap-2">
-              <Link
-                href=""
-                className={clsx({
-                  'rounded-md border p-2 hover:bg-gray-100 hidden lg:block': true,
-                })}
-                onClick={handleCopyToClipboard}
-              >
+            {/* Options */}
+            <div className="items-center gap-3 hidden lg:flex">
+              <IconButton onClick={handleCopyToClipboard} variant="soft">
                 {renderCopyToClipboard()}
-              </Link>
-              <Link
-                href=""
-                className="rounded-md border p-2 hover:bg-gray-100 hidden lg:block"
+              </IconButton>
+              <Separator orientation="vertical" size="2" />
+              <IconButton
                 onClick={() => {
                   setQrDialogOpen(true)
                 }}
+                variant="soft"
               >
                 <QrCodeIcon className="h-5 w-5" />
-              </Link>
+              </IconButton>
+            </div>
 
-              <QRDialog
-                shortUrl={shortLink}
-                alias={link.alias}
-                open={qrDialogOpen}
-                onClose={() => setQrDialogOpen(false)}
-                setOpen={setQrDialogOpen}
-              />
-
+            {/* Options - small form factor */}
+            <div className="block lg:hidden">
               <DropdownMenu.Root>
-                <DropdownMenu.Trigger className="block lg:hidden">
-                  <Link href="" className="rounded-md border p-2 hover:bg-gray-100">
+                <DropdownMenu.Trigger>
+                  <IconButton variant="soft">
                     <EllipsisVerticalIcon className="h-5 w-5" />
-                  </Link>
+                  </IconButton>
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content>
-                  <DropdownMenu.Item onClick={handleCopyToClipboard}>
+                  <IconButton onClick={handleCopyToClipboard} variant="soft">
                     {renderCopyToClipboard()}
-                  </DropdownMenu.Item>
+                  </IconButton>
                   <DropdownMenu.Separator />
-                  <DropdownMenu.Item
+                  <IconButton
                     onClick={() => {
                       setQrDialogOpen(true)
                     }}
+                    variant="soft"
                   >
                     <QrCodeIcon className="h-5 w-5" />
-                  </DropdownMenu.Item>
+                  </IconButton>
                 </DropdownMenu.Content>
               </DropdownMenu.Root>
             </div>
+
+            {/* Closed QR dialog */}
+            <QRDialog
+              shortUrl={shortLink}
+              alias={link.alias}
+              open={qrDialogOpen}
+              onClose={() => setQrDialogOpen(false)}
+              setOpen={setQrDialogOpen}
+            />
           </div>
         </div>
       </div>
