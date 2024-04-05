@@ -3,10 +3,10 @@
 import { useFormState, useFormStatus } from 'react-dom'
 
 import { shortenUrl, State } from '@/app/lib/actions'
-import { LinkIcon, SparklesIcon } from '@heroicons/react/24/outline'
+import { LinkIcon, MagnifyingGlassIcon, SparklesIcon } from '@heroicons/react/24/outline'
 
 import RecentLinks from './RecentLinks'
-import { Button } from '@radix-ui/themes'
+import { Box, Button, TextField } from '@radix-ui/themes'
 
 export default function ShortenUrlForm() {
   const initialState = {
@@ -28,22 +28,23 @@ export default function ShortenUrlForm() {
   return (
     <>
       <form action={dispatch} className="space-y-2">
-        <div className="flex flex-col gap-4 pt-4">
-          <div className="relative">
-            <input
-              className="peer block w-full h-14 rounded-md border border-gray-200 py-[9px] pl-10 text-sm md:text-xl outline-2 placeholder:text-gray-500"
-              id="long_url"
-              type="url"
-              name="long_url"
-              placeholder="Enter or Paste a Long URL"
-              required
-            />
-            <LinkIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
-          </div>
+        <div className="flex flex-col gap-4">
+          <TextField.Root
+            id="long_url"
+            type="url"
+            name="long_url"
+            placeholder="Enter or Paste a Long URL"
+            required
+            size="3"
+          >
+            <TextField.Slot>
+              <LinkIcon height="16" width="16" />
+            </TextField.Slot>
+          </TextField.Root>
           <GetYourLinkButton />
         </div>
       </form>
-      {state.link ? <RecentLinks link={state.link} className="py-2" /> : null}
+      {state.link && <RecentLinks link={state.link} />}
     </>
   )
 }
@@ -52,7 +53,7 @@ function GetYourLinkButton() {
   const { pending } = useFormStatus()
 
   return (
-    <Button size="4" className="mt-4 w-full" aria-disabled={pending}>
+    <Button size="3" className="mt-4 w-full" aria-disabled={pending}>
       Get your link
       <SparklesIcon className="h-6 w-6" />
     </Button>

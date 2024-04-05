@@ -1,6 +1,8 @@
 import Image from 'next/image'
 
 import { lusitana } from '@/app/ui/fonts'
+import { Bars2Icon } from '@heroicons/react/24/outline'
+import { DropdownMenu, IconButton, Link, Text } from '@radix-ui/themes'
 
 import ZipUrlLogo from './ui/components/Logo'
 import ShortenUrlForm from './ui/components/ShortenUrlForm'
@@ -8,19 +10,46 @@ import ShortenUrlForm from './ui/components/ShortenUrlForm'
 export default function Page() {
   return (
     <main className="flex min-h-screen flex-col p-6">
-      <div className="flex h-20 shrink-0 items-end rounded-lg bg-blue-500 p-4">
+      <div className="flex flex-row h-20 items-center justify-between rounded-lg bg-blue-500 p-4">
         <ZipUrlLogo />
+        <div className="gap-6 hidden lg:flex pr-4">
+          <Link href="#" size="4">
+            <Text className="text-white">Login</Text>
+          </Link>
+          <Link href="#" size="4">
+            <Text className="text-white">Sign Up</Text>
+          </Link>
+        </div>
+
+        <div className="block lg:hidden">
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger>
+              <IconButton>
+                <Bars2Icon className="w-6 h-6" />
+              </IconButton>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content>
+              <DropdownMenu.Item>
+                <Link href="#" size="2">
+                  <Text>Login</Text>
+                </Link>
+              </DropdownMenu.Item>
+              <DropdownMenu.Separator />
+              <DropdownMenu.Item>
+                <Link href="#" size="2">
+                  <Text>Sign Up</Text>
+                </Link>
+              </DropdownMenu.Item>
+            </DropdownMenu.Content>
+          </DropdownMenu.Root>
+        </div>
       </div>
       <div className="mt-4 flex grow flex-col gap-4 md:flex-row">
-        <div className="flex flex-col justify-center gap-6 rounded-lg bg-gray-50 px-6 py-10 lg:w-2/5 lg:px-20">
-          <p
-            className={`${lusitana.className} text-2xl text-gray-800 md:text-4xl md:leading-normal`}
-          >
+        <div className="flex flex-col justify-center gap-6 rounded-lg px-6 py-10 lg:w-2/5 lg:px-20">
+          <p className={`${lusitana.className} text-2xl md:text-4xl md:leading-normal`}>
             <strong>Shorter Links. Bigger Impact.</strong> <br />
             <span className="text-lg md:text-2xl">
-              ZipURL makes it easy to <span className="bg-blue-100">create</span>,
-              <span className="bg-blue-100">manage</span>, and{' '}
-              <span className="bg-blue-100">share</span> shortened URLs. And it&apos;s{' '}
+              ZipURL makes it easy to create, manage, and share shortened URLs. And it&apos;s{' '}
               <span className="underline decoration-4 decoration-blue-500">FREE!</span>
             </span>
           </p>

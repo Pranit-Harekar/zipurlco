@@ -1,10 +1,9 @@
 import Image from 'next/image'
-import Link from 'next/link'
 import QRCode from 'qrcode'
 import { useEffect, useState } from 'react'
 
 import { LinkIcon } from '@heroicons/react/24/outline'
-import { Button, Dialog, DropdownMenu, Spinner } from '@radix-ui/themes'
+import { Button, Dialog, DropdownMenu, Link, Spinner } from '@radix-ui/themes'
 
 const generateQR = async (
   shortUrl: string,
@@ -66,11 +65,11 @@ export const QRDialog = ({
 
         {qrCode ? (
           <>
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center gap-2">
               <Image src={qrCode} alt="QR Code" width={150} height={150} />
               <div className="flex flex-row gap-2 items-center text-gray-500">
                 <LinkIcon className="w-4 h-4" />
-                <Link href={`/${alias}`} target="_blank" className="text-sm hover:underline">
+                <Link href={`/${alias}`} target="_blank" size="3">
                   {shortUrl}
                 </Link>
               </div>
