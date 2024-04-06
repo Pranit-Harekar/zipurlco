@@ -21,4 +21,5 @@ model Link {
   alias     String
   target    String
   clicks    Int      @default(0)
+  thumbnail String?
 }

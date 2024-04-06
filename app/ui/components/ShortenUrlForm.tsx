@@ -3,10 +3,10 @@
 import { useFormState, useFormStatus } from 'react-dom'
 
 import { shortenUrl, State } from '@/app/lib/actions'
-import { LinkIcon, MagnifyingGlassIcon, SparklesIcon } from '@heroicons/react/24/outline'
+import { LinkIcon, SparklesIcon } from '@heroicons/react/24/outline'
+import { Button, Spinner, TextField } from '@radix-ui/themes'
 
 import RecentLinks from './RecentLinks'
-import { Box, Button, TextField } from '@radix-ui/themes'
 
 export default function ShortenUrlForm() {
   const initialState = {
@@ -19,6 +19,7 @@ export default function ShortenUrlForm() {
     //   target:
     //     'https://www.amazon.com/s?k=boric+powder+for+rice&crid=23DK20YM7HXIF&sprefix=boric+powder+for+rice%2Caps%2C380&ref=nb_sb_noss_1',
     //   clicks: 1,
+    //   thumbnail: '',
     // },
     link: null,
     error: null,
@@ -53,9 +54,9 @@ function GetYourLinkButton() {
   const { pending } = useFormStatus()
 
   return (
-    <Button size="3" className="mt-4 w-full" aria-disabled={pending}>
+    <Button size="3" className="mt-4 w-full" disabled={pending}>
       Get your link
-      <SparklesIcon className="h-6 w-6" />
+      {pending ? <Spinner loading /> : <SparklesIcon className="h-6 w-6" />}
     </Button>
   )
 }
