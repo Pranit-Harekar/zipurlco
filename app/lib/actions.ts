@@ -1,10 +1,15 @@
 'use server'
 
+import bcrypt from 'bcryptjs'
 import { nanoid } from 'nanoid'
+import { AuthError } from 'next-auth'
+import { revalidatePath } from 'next/cache'
+import { redirect } from 'next/navigation'
 import ogs from 'open-graph-scraper'
 
+import { signIn } from '@/auth'
 import prisma from '@/lib/prisma'
-import { Link as PrismaLink } from '@prisma/client'
+import { Link as PrismaLink, User } from '@prisma/client'
 
 export type State = {
   link?: PrismaLink | null
@@ -51,4 +56,49 @@ export async function getRecentLinks() {
     take: 3,
     orderBy: { createdAt: 'desc' },
   })
+}
+
+export async function getUser(email: string): Promise<User | null> {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { email },
+    })
+    return user
+  } catch (error) {
+    console.error('Failed to fetch user:', error)
+    throw new Error('Failed to fetch user.')
+  }
+}
+
+export async function authenticate(prevState: string | undefined, formData: FormData) {
+  try {
+    await signIn('credentials', formData)
+  } catch (error) {
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case 'CredentialsSignin':
+          return 'Invalid credentials.'
+        default:
+          return 'Something went wrong.'
+      }
+    }
+    throw error
+  }
+}
+
+export async function register(prevState: string | undefined, formData: FormData) {
+  try {
+    const { email, password } = Object.fromEntries(formData)
+    await prisma.user.create({
+      data: {
+        email: email.toString(),
+        password: await bcrypt.hash(password.toString(), 10),
+      },
+    })
+
+    revalidatePath('/login')
+    redirect('/login')
+  } catch (error) {
+    return 'Failed to register user.'
+  }
 }
