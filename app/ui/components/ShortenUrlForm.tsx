@@ -4,9 +4,9 @@ import { useFormState, useFormStatus } from 'react-dom'
 
 import { shortenUrl, State } from '@/app/lib/actions'
 import { LinkIcon, SparklesIcon } from '@heroicons/react/24/outline'
-import { Button, Spinner, TextField } from '@radix-ui/themes'
+import { Button, Link, Spinner, Text, TextField } from '@radix-ui/themes'
 
-import RecentLinks from './RecentLinks'
+import RecentLinks, { RecentLinksSkeleton } from './RecentLinks'
 
 export default function ShortenUrlForm() {
   const initialState = {
@@ -45,7 +45,18 @@ export default function ShortenUrlForm() {
           <GetYourLinkButton />
         </div>
       </form>
-      {state.link && <RecentLinks link={state.link} />}
+      {state.link ? <RecentLinks link={state.link} /> : <RecentLinksSkeleton />}
+      <Text color="gray" size="2">
+        Want to create more links, edit them, or view their analytics?{' '}
+        <Link href="#" underline="always">
+          Create a free account
+        </Link>{' '}
+        or{' '}
+        <Link href="#" underline="always">
+          login
+        </Link>{' '}
+        to get started.
+      </Text>
     </>
   )
 }

@@ -50,11 +50,8 @@ export const QRDialog = ({
   const [qrCode, setQRCode] = useState<string>()
 
   useEffect(() => {
-    console.log('Generating QR Code...')
-    const httpsUrl = `https://${shortUrl}`
-    generateQR(httpsUrl).then((data) => {
+    generateQR(`https://${shortUrl}`).then((data) => {
       setQRCode(data)
-      console.log('QR Code generated!', data)
     })
   }, [shortUrl])
 
