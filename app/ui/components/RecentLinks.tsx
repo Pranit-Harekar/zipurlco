@@ -1,6 +1,7 @@
 import clsx from 'clsx'
 import { useState } from 'react'
 
+import { fqdn } from '@/app/lib/fqdn'
 import {
   CheckIcon,
   ClipboardDocumentIcon,
@@ -21,9 +22,7 @@ export interface IProps {
 export default function RecentLink({ link, className }: IProps) {
   const [copySuccess, setCopySuccess] = useState(false)
   const [qrDialogOpen, setQrDialogOpen] = useState(false)
-
-  const hostname = process.env.NODE_ENV === 'development' ? 'localhost:3000' : 'zipurl.co'
-  const shortLink = `${hostname}/${link.alias}`
+  const shortLink = fqdn(link)
 
   const handleCopyToClipboard = () => {
     setCopySuccess(true)
@@ -48,7 +47,7 @@ export default function RecentLink({ link, className }: IProps) {
   )
 
   return (
-    <div className={clsx('mt-6 flow-root max-w-2/5', className)}>
+    <div className={clsx('mt-4 flow-root max-w-2/5', className)}>
       <div className="inline-block min-w-full align-middle">
         <div className="rounded-lg py-2 md:pt-0">
           <div key={link.alias} className="flex justify-between">
@@ -122,8 +121,7 @@ export default function RecentLink({ link, className }: IProps) {
 
             {/* Closed QR dialog */}
             <QRDialog
-              shortUrl={shortLink}
-              alias={link.alias}
+              {...{ link }}
               open={qrDialogOpen}
               onClose={() => setQrDialogOpen(false)}
               setOpen={setQrDialogOpen}
@@ -136,22 +134,22 @@ export default function RecentLink({ link, className }: IProps) {
 }
 
 export const RecentLinksSkeleton = () => (
-  <div className="mt-6 flow-root max-w-2/5 animate-pulse">
+  <div className="mt-4 flow-root max-w-2/5 animate-pulse">
     <div className="inline-block min-w-full align-middle">
-      <div className="rounded-lg py-2 md:pt-0">
+      <div className="py-2 md:pt-0">
         <div className="flex justify-between gap-2">
           {/* <!-- Links --> */}
           <div className="flex items-center gap-2">
             <Skeleton className="w-12 h-12" />
             <div className="flex flex-col space-y-2 w-44 md:w-56 lg:w-72 xl:w-80">
-              <Skeleton className="h-4" />
-              <Skeleton className="h-4" />
+              <Skeleton className="h-5" />
+              <Skeleton className="h-5" />
             </div>
           </div>
           {/* <!-- Options --> */}
           <div className="items-center gap-1 hidden lg:flex">
             <Skeleton className="w-7 h-7" />
-            <Skeleton className="w-0.5 h-6 mx-2" />
+            <Skeleton className="w-0.5 h-7 mx-2" />
             <Skeleton className="w-7 h-7" />
           </div>
 

@@ -3,8 +3,8 @@
 import { useFormState, useFormStatus } from 'react-dom'
 
 import { shortenUrl, State } from '@/app/lib/actions'
-import { LinkIcon, SparklesIcon } from '@heroicons/react/24/outline'
-import { Button, Link, Spinner, Text, TextField } from '@radix-ui/themes'
+import { LinkIcon, SparklesIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import { Button, IconButton, Link, Spinner, Text, TextField } from '@radix-ui/themes'
 
 import RecentLinks, { RecentLinksSkeleton } from './RecentLinks'
 
@@ -40,6 +40,11 @@ export default function ShortenUrlForm() {
           >
             <TextField.Slot>
               <LinkIcon height="16" width="16" />
+            </TextField.Slot>
+            <TextField.Slot pr="3">
+              <IconButton size="2" variant="ghost" type="reset">
+                <XMarkIcon height="16" width="16" />
+              </IconButton>
             </TextField.Slot>
           </TextField.Root>
           <GetYourLinkButton />

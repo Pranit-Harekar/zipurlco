@@ -45,7 +45,7 @@ export default function Page() {
         </div>
       </div>
       <div className="mt-4 flex grow flex-col gap-4 md:flex-row">
-        <div className="flex flex-col justify-center gap-6 rounded-lg px-6 py-10 lg:w-2/5 lg:px-20">
+        <div className="flex flex-col justify-center gap-6 rounded-lg bg-gray-50 px-6 py-10 lg:w-2/5 lg:px-20">
           <p className={`${lusitana.className} text-2xl md:text-4xl md:leading-normal`}>
             <strong>Shorter Links. Bigger Impact.</strong> <br />
             <span className="text-lg md:text-2xl">

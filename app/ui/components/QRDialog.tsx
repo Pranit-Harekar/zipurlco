@@ -1,14 +1,14 @@
 import Image from 'next/image'
-import QRCode from 'qrcode'
+import QRCode, { QRCodeDataURLType } from 'qrcode'
 import { useEffect, useState } from 'react'
 
 import { LinkIcon } from '@heroicons/react/24/outline'
+import { Link as LinkModel } from '@prisma/client'
 import { Button, Dialog, DropdownMenu, Link, Spinner } from '@radix-ui/themes'
+import { fqdn } from '@/app/lib/fqdn'
 
-const generateQR = async (
-  shortUrl: string,
-  type: 'image/png' | 'image/jpeg' | 'image/webp' = 'image/png',
-) => {
+// Helper functions
+async function generateQR(shortUrl: string, type: QRCodeDataURLType = 'image/png') {
   try {
     return await QRCode.toDataURL(shortUrl, {
       type,
@@ -18,11 +18,7 @@ const generateQR = async (
   }
 }
 
-const downloadQR = async (
-  shortUrl: string,
-  filename: string,
-  type: 'image/png' | 'image/jpeg' | 'image/webp',
-) => {
+async function downloadQR(shortUrl: string, filename: string, type: QRCodeDataURLType) {
   const url = await generateQR(shortUrl, type)
   const a = document.createElement('a')
   if (!url) {
@@ -34,20 +30,18 @@ const downloadQR = async (
   a.click()
 }
 
-export const QRDialog = ({
-  shortUrl,
-  alias,
-  open,
-  onClose,
-  setOpen,
-}: {
-  shortUrl: string
-  alias: string
+export interface IProps {
+  link: LinkModel
   open: boolean
   setOpen: (open: boolean) => void
   onClose: () => void
-}) => {
+}
+
+export const QRDialog = ({ link, open, onClose, setOpen }: IProps) => {
   const [qrCode, setQRCode] = useState<string>()
+
+  const shortUrl = fqdn(link)
+  const imageTypes = ['png', 'jpeg', 'webp']
 
   useEffect(() => {
     generateQR(`https://${shortUrl}`).then((data) => {
@@ -66,7 +60,7 @@ export const QRDialog = ({
               <Image src={qrCode} alt="QR Code" width={150} height={150} />
               <div className="flex flex-row gap-2 items-center text-gray-500">
                 <LinkIcon className="w-4 h-4" />
-                <Link href={`/${alias}`} target="_blank" size="3">
+                <Link href={`/${link.alias}`} target="_blank" size="3">
                   {shortUrl}
                 </Link>
               </div>
@@ -84,27 +78,16 @@ export const QRDialog = ({
                     <Button>Download</Button>
                   </DropdownMenu.Trigger>
                   <DropdownMenu.Content>
-                    <DropdownMenu.Item
-                      onClick={() => {
-                        downloadQR(shortUrl, alias, 'image/png')
-                      }}
-                    >
-                      PNG
-                    </DropdownMenu.Item>
-                    <DropdownMenu.Item
-                      onClick={() => {
-                        downloadQR(shortUrl, alias, 'image/jpeg')
-                      }}
-                    >
-                      JPEG
-                    </DropdownMenu.Item>
-                    <DropdownMenu.Item
-                      onClick={() => {
-                        downloadQR(shortUrl, alias, 'image/webp')
-                      }}
-                    >
-                      WEBP
-                    </DropdownMenu.Item>
+                    {imageTypes.map((type) => (
+                      <DropdownMenu.Item
+                        key={type}
+                        onClick={() => {
+                          downloadQR(shortUrl, link.alias, `image/${type}` as QRCodeDataURLType)
+                        }}
+                      >
+                        {type.toUpperCase()}
+                      </DropdownMenu.Item>
+                    ))}
                   </DropdownMenu.Content>
                 </DropdownMenu.Root>
               </Dialog.Close>
