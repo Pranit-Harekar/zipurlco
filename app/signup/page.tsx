@@ -1,5 +1,6 @@
-import SignUpForm from '@/app/ui/components/SignUpForm'
+import SignUpForm from '@/app/ui/components/login/SignUpForm'
 import Logo from '@/app/ui/components/Logo'
+import Link from 'next/link'
 
 export default function SignUpPage() {
   return (
@@ -7,7 +8,9 @@ export default function SignUpPage() {
       <div className="relative mx-auto flex w-full max-w-[400px] flex-col space-y-2.5 p-4 md:-mt-32">
         <div className="flex h-20 w-full items-end rounded-lg bg-blue-500 p-3 md:h-36">
           <div className="w-32 text-white md:w-36">
-            <Logo />
+            <Link href="/">
+              <Logo />
+            </Link>
           </div>
         </div>
         <SignUpForm />

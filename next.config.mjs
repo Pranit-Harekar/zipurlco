@@ -19,6 +19,15 @@ const nextConfig = {
     })
     return config
   },
+  async redirects() {
+    return [
+      {
+        source: '/dashboard',
+        destination: '/dashboard/links',
+        permanent: true,
+      },
+    ]
+  },
 }
 
 export default nextConfig

@@ -53,11 +53,11 @@ export default function ShortenUrlForm() {
       {state.link ? <RecentLinks link={state.link} /> : <RecentLinksSkeleton />}
       <Text color="gray" size="2">
         Want to create more links, edit them, or view their analytics?{' '}
-        <Link href="#" underline="always">
+        <Link href="/signup" underline="always">
           Create a free account
         </Link>{' '}
         or{' '}
-        <Link href="#" underline="always">
+        <Link href="/login" underline="always">
           login
         </Link>{' '}
         to get started.
