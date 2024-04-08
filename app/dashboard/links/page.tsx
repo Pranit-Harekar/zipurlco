@@ -1,44 +1,46 @@
 import { Metadata } from 'next'
+import { Suspense } from 'react'
 
+import { fetchLinksPages } from '@/app/lib/actions'
+import { CreateLink } from '@/app/ui/components/dashboard/links/Buttons'
+import Pagination from '@/app/ui/components/dashboard/links/Pagination'
+import Search from '@/app/ui/components/Search'
+import { LinksSkeleton } from '@/app/ui/components/dashboard/links/Skeleton'
+import Table from '@/app/ui/components/dashboard/links/Table'
 import { lusitana } from '@/app/ui/fonts'
-import { Button, Skeleton } from '@radix-ui/themes'
 
 export const metadata: Metadata = {
   title: 'Links',
 }
 
-export default async function Page() {
-  return (
-    <main>
-      <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>Dashboard</h1>
-      <Button>Create a Link</Button>
-      <div className="mt-4 flow-root max-w-2/5 animate-pulse">
-        <div className="inline-block min-w-full align-middle">
-          <div className="py-2 md:pt-0">
-            <div className="flex justify-between gap-2">
-              {/* <!-- Links --> */}
-              <div className="flex items-center gap-2">
-                <Skeleton className="w-12 h-12" />
-                <div className="flex flex-col space-y-2 w-44 md:w-56 lg:w-72 xl:w-80">
-                  <Skeleton className="h-5" />
-                  <Skeleton className="h-5" />
-                </div>
-              </div>
-              {/* <!-- Options --> */}
-              <div className="items-center gap-1 hidden lg:flex">
-                <Skeleton className="w-7 h-7" />
-                <Skeleton className="w-0.5 h-7 mx-2" />
-                <Skeleton className="w-7 h-7" />
-              </div>
+export default async function Page({
+  searchParams,
+}: {
+  searchParams?: {
+    query?: string
+    page?: string
+  }
+}) {
+  const query = searchParams?.query || ''
+  const currentPage = Number(searchParams?.page) || 1
 
-              {/* <!-- Options - small form factor--> */}
-              <div className="items-center gap-1 flex lg:hidden">
-                <Skeleton className="w-7 h-7" />
-              </div>
-            </div>
-          </div>
-        </div>
+  const totalPages = await fetchLinksPages(query)
+
+  return (
+    <div className="w-full">
+      <div className="flex w-full items-center justify-between">
+        <h1 className={`${lusitana.className} text-2xl`}>Links</h1>
       </div>
-    </main>
+      <div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
+        <Search placeholder="Search links..." />
+        <CreateLink />
+      </div>
+      <Suspense key={query + currentPage} fallback={<LinksSkeleton />}>
+        <Table query={query} currentPage={currentPage} />
+      </Suspense>
+      <div className="mt-5 flex w-full justify-center">
+        <Pagination totalPages={totalPages} />
+      </div>
+    </div>
   )
 }

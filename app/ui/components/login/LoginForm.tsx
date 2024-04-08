@@ -6,7 +6,7 @@ import { authenticate } from '@/app/lib/actions'
 import { lusitana } from '@/app/ui/fonts'
 import { ArrowRightIcon } from '@heroicons/react/20/solid'
 import { AtSymbolIcon, ExclamationCircleIcon, KeyIcon } from '@heroicons/react/24/outline'
-import { Button, Text } from '@radix-ui/themes'
+import { Button, Spinner, Text } from '@radix-ui/themes'
 
 export default function LoginForm() {
   const [errorMessage, dispatch] = useFormState(authenticate, undefined)
@@ -70,8 +70,9 @@ function LoginButton() {
   const { pending } = useFormStatus()
 
   return (
-    <Button size="2" aria-disabled={pending}>
-      Log in <ArrowRightIcon className="h-5 w-5" />
+    <Button size="2" disabled={pending}>
+      Log in
+      {pending ? <Spinner loading /> : <ArrowRightIcon className="h-5 w-5" />}
     </Button>
   )
 }

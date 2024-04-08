@@ -3,7 +3,7 @@
 import bcrypt from 'bcryptjs'
 import { nanoid } from 'nanoid'
 import { AuthError } from 'next-auth'
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, unstable_noStore as noStore } from 'next/cache'
 import { redirect } from 'next/navigation'
 import ogs from 'open-graph-scraper'
 
@@ -51,11 +51,91 @@ export async function shortenUrl(prevState: State, formData: FormData) {
   return { link }
 }
 
-export async function getRecentLinks() {
-  return await prisma.link.findMany({
-    take: 3,
-    orderBy: { createdAt: 'desc' },
+const ITEMS_PER_PAGE = 6
+export async function getFilteredLinks(query: string, currentPage: number) {
+  noStore()
+
+  const offset = (currentPage - 1) * ITEMS_PER_PAGE
+
+  try {
+    return await prisma.link.findMany({
+      where: {
+        OR: [
+          {
+            target: {
+              contains: query,
+            },
+          },
+          {
+            alias: {
+              contains: query,
+            },
+          },
+        ],
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      skip: offset,
+      take: ITEMS_PER_PAGE,
+    })
+  } catch (error) {
+    console.error('Failed to fetch links', error)
+    return []
+  }
+}
+
+export async function fetchLinksPages(query: string) {
+  noStore()
+
+  const totalLinks = await prisma.link.count({
+    where: {
+      OR: [
+        {
+          target: {
+            contains: query,
+          },
+        },
+        {
+          alias: {
+            contains: query,
+          },
+        },
+      ],
+    },
   })
+
+  return Math.ceil(totalLinks / ITEMS_PER_PAGE)
+}
+
+export async function updateLink(id: string, formData: FormData) {
+  const { target } = Object.fromEntries(formData)
+  try {
+    await prisma.link.update({
+      where: { id },
+      data: {
+        target: target.toString(),
+      },
+    })
+    revalidatePath('/dashboard/links')
+  } catch (error) {
+    return {
+      message: 'Failed to update link.',
+    }
+  }
+}
+
+export async function deleteLink(id: string) {
+  try {
+    await prisma.link.delete({
+      where: { id },
+    })
+    revalidatePath('/dashboard/links')
+  } catch (error) {
+    return {
+      message: 'Failed to delete link.',
+    }
+  }
 }
 
 export async function getUser(email: string): Promise<User | null> {

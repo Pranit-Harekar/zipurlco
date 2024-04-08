@@ -9,7 +9,7 @@ import { ChartBarIcon, Cog8ToothIcon, LinkIcon } from '@heroicons/react/24/outli
 // Map of links to display in the side navigation.
 // Depending on the size of the application, this would be stored in a database.
 const links = [
-  { name: 'Links', href: '/dashboard', icon: LinkIcon },
+  { name: 'Links', href: '/dashboard/links', icon: LinkIcon },
   {
     name: 'Analytics',
     href: '/dashboard/analytics',
