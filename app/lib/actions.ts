@@ -6,9 +6,10 @@ import { AuthError } from 'next-auth'
 import { revalidatePath, unstable_noStore as noStore } from 'next/cache'
 import { redirect } from 'next/navigation'
 import ogs from 'open-graph-scraper'
+import { z } from 'zod'
 
+import prisma from '@/app/lib/prisma'
 import { signIn } from '@/auth'
-import prisma from '@/lib/prisma'
 import { Link as PrismaLink, User } from '@prisma/client'
 
 export type State = {
@@ -108,6 +109,57 @@ export async function fetchLinksPages(query: string) {
   return Math.ceil(totalLinks / ITEMS_PER_PAGE)
 }
 
+export type CreateLinkState = {
+  errors?: {
+    target?: string[]
+  }
+  message?: string | null
+}
+
+const CreateLinkFormSchema = z.object({
+  target: z
+    .string({
+      required_error: 'Please enter a URL.',
+      invalid_type_error: 'Please enter a valid URL.',
+    })
+    .min(1, 'Please enter a URL.'),
+})
+
+export async function createLink(prevState: CreateLinkState, formData: FormData) {
+  // Validate form using Zod
+  const validatedFields = CreateLinkFormSchema.safeParse({
+    target: formData.get('target'),
+  })
+
+  // If form validation fails, return errors early. Otherwise, continue.
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. Failed to Create Link.',
+    }
+  }
+
+  const { target } = validatedFields.data
+  const ogData = await getOGData(target)
+
+  try {
+    await prisma.link.create({
+      data: {
+        target,
+        alias: nanoid(10),
+        thumbnail: ogData && ogData.image,
+      },
+    })
+  } catch (error) {
+    return {
+      message: 'Failed to create link.',
+    }
+  }
+
+  revalidatePath('/dashboard/links')
+  redirect('/dashboard/links')
+}
+
 export async function updateLink(id: string, formData: FormData) {
   const { target } = Object.fromEntries(formData)
   try {
@@ -117,12 +169,14 @@ export async function updateLink(id: string, formData: FormData) {
         target: target.toString(),
       },
     })
-    revalidatePath('/dashboard/links')
   } catch (error) {
     return {
       message: 'Failed to update link.',
     }
   }
+
+  revalidatePath('/dashboard/links')
+  redirect('/dashboard/links')
 }
 
 export async function deleteLink(id: string) {

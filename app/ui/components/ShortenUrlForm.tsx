@@ -20,6 +20,7 @@ export default function ShortenUrlForm() {
     //     'https://www.amazon.com/s?k=boric+powder+for+rice&crid=23DK20YM7HXIF&sprefix=boric+powder+for+rice%2Caps%2C380&ref=nb_sb_noss_1',
     //   clicks: 1,
     //   thumbnail: '',
+    //   userId: 'cluh4z1tf0000vdc3wurr6zxn',
     // },
     link: null,
     error: null,

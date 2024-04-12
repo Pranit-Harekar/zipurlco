@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-import prisma from '@/lib/prisma'
+import prisma from '@/app/lib/prisma'
+import { redirect } from 'next/navigation'
 
 export const GET = async (req: NextRequest) => {
   const slug = req.url.split('/').pop()
@@ -22,12 +23,7 @@ export const GET = async (req: NextRequest) => {
   })
 
   if (!link) {
-    return new Response(`<h1>Link not found</h1>`, {
-      status: 404,
-      headers: {
-        'content-type': 'text/html',
-      },
-    })
+    redirect('/')
   }
 
   // update link count
