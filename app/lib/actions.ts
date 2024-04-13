@@ -9,7 +9,7 @@ import ogs from 'open-graph-scraper'
 import { z } from 'zod'
 
 import prisma from '@/app/lib/prisma'
-import { signIn } from '@/auth'
+import { auth, signIn } from '@/auth'
 import { Link as PrismaLink, User } from '@prisma/client'
 
 export type State = {
@@ -37,7 +37,7 @@ async function getOGData(url: string) {
   }
 }
 
-export async function shortenUrl(prevState: State, formData: FormData) {
+export async function createTrialLink(prevState: State, formData: FormData) {
   const url = formData.get('long_url') as string // todo: fix this
   const ogData = await getOGData(url)
 
@@ -52,15 +52,26 @@ export async function shortenUrl(prevState: State, formData: FormData) {
   return { link }
 }
 
+const getCurrentUser = async () => {
+  const session = await auth()
+  if (!session || !session.user || !session.user.id) {
+    throw new Error('User not authenticated')
+  }
+
+  return session.user
+}
+
 const ITEMS_PER_PAGE = 6
 export async function getFilteredLinks(query: string, currentPage: number) {
   noStore()
 
+  const userId = (await getCurrentUser()).id
   const offset = (currentPage - 1) * ITEMS_PER_PAGE
 
   try {
     return await prisma.link.findMany({
       where: {
+        userId,
         OR: [
           {
             target: {
@@ -89,8 +100,11 @@ export async function getFilteredLinks(query: string, currentPage: number) {
 export async function fetchLinksPages(query: string) {
   noStore()
 
+  const userId = (await getCurrentUser()).id
+
   const totalLinks = await prisma.link.count({
     where: {
+      userId,
       OR: [
         {
           target: {
@@ -141,6 +155,7 @@ export async function createLink(prevState: CreateLinkState, formData: FormData)
 
   const { target } = validatedFields.data
   const ogData = await getOGData(target)
+  const userId = (await getCurrentUser()).id
 
   try {
     await prisma.link.create({
@@ -148,6 +163,7 @@ export async function createLink(prevState: CreateLinkState, formData: FormData)
         target,
         alias: nanoid(10),
         thumbnail: ogData && ogData.image,
+        userId,
       },
     })
   } catch (error) {
@@ -162,9 +178,11 @@ export async function createLink(prevState: CreateLinkState, formData: FormData)
 
 export async function updateLink(id: string, formData: FormData) {
   const { target } = Object.fromEntries(formData)
+  const userId = (await getCurrentUser()).id
+
   try {
     await prisma.link.update({
-      where: { id },
+      where: { id, userId },
       data: {
         target: target.toString(),
       },
@@ -180,9 +198,11 @@ export async function updateLink(id: string, formData: FormData) {
 }
 
 export async function deleteLink(id: string) {
+  const userId = (await getCurrentUser()).id
+
   try {
     await prisma.link.delete({
-      where: { id },
+      where: { id, userId },
     })
     revalidatePath('/dashboard/links')
   } catch (error) {
@@ -196,6 +216,18 @@ export async function getUser(email: string): Promise<User | null> {
   try {
     const user = await prisma.user.findUnique({
       where: { email },
+    })
+    return user
+  } catch (error) {
+    console.error('Failed to fetch user:', error)
+    throw new Error('Failed to fetch user.')
+  }
+}
+
+export async function getUserById(id: string): Promise<User | null> {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id },
     })
     return user
   } catch (error) {
@@ -234,5 +266,59 @@ export async function register(prevState: string | undefined, formData: FormData
     redirect('/login')
   } catch (error) {
     return 'Failed to register user.'
+  }
+}
+
+export type UpdateUserState = {
+  errors?: {
+    email?: string[]
+    password?: string[]
+  }
+  message?: string | null
+}
+
+const UpdateUserFormSchema = z.object({
+  email: z.string({
+    required_error: 'Please enter an email.',
+    invalid_type_error: 'Please enter a valid email.',
+  }),
+  password: z.string({
+    required_error: 'Please enter a password.',
+    invalid_type_error: 'Please enter a valid password.',
+  }),
+})
+
+export async function updateUser(id: string, prevState: UpdateUserState, formData: FormData) {
+  // Validate form using Zod
+  const validatedFields = UpdateUserFormSchema.safeParse({
+    email: formData.get('email'),
+    password: formData.get('password'),
+  })
+
+  // If form validation fails, return errors early. Otherwise, continue.
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. Failed to Update User.',
+    }
+  }
+
+  const { email, password } = validatedFields.data
+
+  try {
+    await prisma.user.update({
+      where: { id },
+      data: {
+        email: email.toString(),
+        password: await bcrypt.hash(password.toString(), 10),
+      },
+    })
+
+    revalidatePath('/dashboard/settings')
+    redirect('/dashboard/settings')
+  } catch (error) {
+    return {
+      message: 'Failed to update user.',
+    }
   }
 }

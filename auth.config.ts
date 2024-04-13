@@ -19,6 +19,13 @@ export const authConfig = {
       }
       return true
     },
+    session: async ({ session, token }) => {
+      if (token && token.sub) {
+        session.user.id = token.sub
+      }
+
+      return session
+    },
   },
   providers: [], // Add providers with an empty array for now
 } satisfies NextAuthConfig

@@ -2,7 +2,7 @@
 
 import { useFormState, useFormStatus } from 'react-dom'
 
-import { shortenUrl, State } from '@/app/lib/actions'
+import { createTrialLink, State } from '@/app/lib/actions'
 import { LinkIcon, SparklesIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { Button, IconButton, Link, Spinner, Text, TextField } from '@radix-ui/themes'
 
@@ -25,7 +25,7 @@ export default function ShortenUrlForm() {
     link: null,
     error: null,
   }
-  const [state, dispatch] = useFormState<State, FormData>(shortenUrl, initialState)
+  const [state, dispatch] = useFormState<State, FormData>(createTrialLink, initialState)
 
   return (
     <>
@@ -43,7 +43,7 @@ export default function ShortenUrlForm() {
               <LinkIcon height="16" width="16" />
             </TextField.Slot>
             <TextField.Slot pr="3">
-              <IconButton size="2" variant="ghost" type="reset">
+              <IconButton size="2" variant="ghost" type="reset" color="gray">
                 <XMarkIcon height="16" width="16" />
               </IconButton>
             </TextField.Slot>

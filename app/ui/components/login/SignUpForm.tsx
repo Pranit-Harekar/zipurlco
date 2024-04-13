@@ -6,7 +6,7 @@ import { register } from '@/app/lib/actions'
 import { lusitana } from '@/app/ui/fonts'
 import { ArrowRightIcon } from '@heroicons/react/20/solid'
 import { AtSymbolIcon, ExclamationCircleIcon, KeyIcon } from '@heroicons/react/24/outline'
-import { Button, Spinner, Text } from '@radix-ui/themes'
+import { Button, Link, Spinner, Text } from '@radix-ui/themes'
 
 export default function SignUpForm() {
   const [errorMessage, dispatch] = useFormState(register, undefined)
@@ -61,6 +61,9 @@ export default function SignUpForm() {
             </>
           )}
         </div>
+        <Text size="2" color="gray">
+          Already have an account? <Link href="/login">Login</Link> or <Link href="/">go home</Link>
+        </Text>
       </div>
     </form>
   )
