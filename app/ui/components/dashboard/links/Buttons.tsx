@@ -1,8 +1,9 @@
 import Link from 'next/link'
 
 import { deleteLink } from '@/app/lib/actions'
-import { PencilIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline'
-import { Button, Dialog, Flex, IconButton } from '@radix-ui/themes'
+import { DialogItem } from '@/app/ui/components/DialogItem'
+import { PlusIcon } from '@heroicons/react/24/outline'
+import { Button, Dialog, DropdownMenu, Flex } from '@radix-ui/themes'
 
 export function CreateLink() {
   return (
@@ -17,11 +18,9 @@ export function CreateLink() {
 
 export function UpdateLink({ id }: { id: string }) {
   return (
-    <IconButton variant="soft">
-      <Link href={`/dashboard/links/${id}/edit`}>
-        <PencilIcon className="w-5" />
-      </Link>
-    </IconButton>
+    <Link href={`/dashboard/links/${id}/edit`}>
+      <DropdownMenu.Item shortcut="⌘ E">Edit</DropdownMenu.Item>
+    </Link>
   )
 }
 
@@ -29,35 +28,21 @@ export function DeleteLink({ id }: { id: string }) {
   const deleteInvoiceWithId = deleteLink.bind(null, id)
 
   return (
-    <>
-      <Dialog.Root>
-        <Dialog.Trigger>
-          <IconButton variant="soft" color="red">
-            <span className="sr-only">Delete</span>
-            <TrashIcon className="w-4" />
-          </IconButton>
-        </Dialog.Trigger>
-
-        <Dialog.Content maxWidth="450px">
-          <Dialog.Title>Delete Link</Dialog.Title>
-          <Dialog.Description size="2" mb="4">
-            Are you sure you want to delete this link? This action cannot be undone.
-          </Dialog.Description>
-
-          <Flex gap="3" mt="4" justify="end">
-            <Dialog.Close>
-              <Button variant="soft" color="gray">
-                Close
-              </Button>
-            </Dialog.Close>
-            <Dialog.Close>
-              <form action={deleteInvoiceWithId}>
-                <Button color="red">Yes, Delete Link</Button>
-              </form>
-            </Dialog.Close>
-          </Flex>
-        </Dialog.Content>
-      </Dialog.Root>
-    </>
+    <DialogItem triggerChildren="Delete" color="red" shortcut="⌘ ⌫" maxWidth="450px">
+      <Dialog.Title>Delete Link</Dialog.Title>
+      <Dialog.Description size="2" mb="4">
+        Are you sure you want to delete this link? This action cannot be undone.
+      </Dialog.Description>
+      <Flex gap="3" mt="4" justify="end">
+        <Dialog.Close>
+          <Button variant="soft">Close</Button>
+        </Dialog.Close>
+        <Dialog.Close>
+          <form action={deleteInvoiceWithId}>
+            <Button color="red">Yes, Delete Link</Button>
+          </form>
+        </Dialog.Close>
+      </Flex>
+    </DialogItem>
   )
 }

@@ -1,11 +1,11 @@
-import Image from 'next/image'
-import { UpdateLink, DeleteLink } from '@/app/ui/components/dashboard/links/Buttons'
-import LinkStatus from '@/app/ui/components/dashboard/links/Status'
-import { formatDateToLocal } from '@/app/lib/utils'
 import { getFilteredLinks } from '@/app/lib/actions'
-import { Avatar } from '@radix-ui/themes'
-import { LinkIcon } from '@heroicons/react/24/outline'
 import { fqdn } from '@/app/lib/fqdn'
+import { formatDateToLocal } from '@/app/lib/utils'
+import { DeleteLink, UpdateLink } from '@/app/ui/components/dashboard/links/Buttons'
+import LinkStatus from '@/app/ui/components/dashboard/links/Status'
+import { EllipsisVerticalIcon, LinkIcon } from '@heroicons/react/24/outline'
+import { Avatar, DropdownMenu, IconButton, Link } from '@radix-ui/themes'
+import { CopyLink } from './ClientButtons'
 
 export default async function LinksTable({
   query,
@@ -47,10 +47,19 @@ export default async function LinksTable({
                     <p className="text-xl font-medium">{link.clicks}</p>
                     <p>{formatDateToLocal(link.createdAt.toString())}</p>
                   </div>
-                  <div className="flex justify-end gap-2">
-                    <UpdateLink id={link.id} />
-                    <DeleteLink id={link.id} />
-                  </div>
+                  <DropdownMenu.Root modal>
+                    <DropdownMenu.Trigger>
+                      <IconButton variant="surface" color="gray">
+                        <EllipsisVerticalIcon className="h-5 w-5" />
+                      </IconButton>
+                    </DropdownMenu.Trigger>
+                    <DropdownMenu.Content>
+                      <CopyLink link={fqdn(link)} />
+                      <UpdateLink id={link.id} />
+                      <DropdownMenu.Separator />
+                      <DeleteLink id={link.id} />
+                    </DropdownMenu.Content>
+                  </DropdownMenu.Root>
                 </div>
               </div>
             ))}
@@ -92,11 +101,15 @@ export default async function LinksTable({
                         size="4"
                         alt={`${link.alias} thumbnail`}
                       />
-                      <p>{fqdn(link)}</p>
+                      <Link href={`/${link.alias}`} target="_blank">
+                        {fqdn(link)}
+                      </Link>
                     </div>
                   </td>
                   <td className="whitespace-nowrap px-3 py-3 truncate max-w-44 md:max-w-56 lg:max-w-72 xl:max-w-80">
-                    {link.target}
+                    <Link href={link.target} target="_blank" underline="always" color="gray">
+                      {link.target}
+                    </Link>
                   </td>
                   <td className="whitespace-nowrap px-3 py-3">{link.clicks}</td>
                   <td className="whitespace-nowrap px-3 py-3">
@@ -106,10 +119,19 @@ export default async function LinksTable({
                     <LinkStatus status={'active'} />
                   </td>
                   <td className="whitespace-nowrap py-3 pl-6 pr-3">
-                    <div className="flex justify-end gap-3">
-                      <UpdateLink id={link.id} />
-                      <DeleteLink id={link.id} />
-                    </div>
+                    <DropdownMenu.Root modal>
+                      <DropdownMenu.Trigger>
+                        <IconButton variant="surface" color="gray">
+                          <EllipsisVerticalIcon className="h-5 w-5" />
+                        </IconButton>
+                      </DropdownMenu.Trigger>
+                      <DropdownMenu.Content>
+                        <CopyLink link={fqdn(link)} />
+                        <UpdateLink id={link.id} />
+                        <DropdownMenu.Separator />
+                        <DeleteLink id={link.id} />
+                      </DropdownMenu.Content>
+                    </DropdownMenu.Root>
                   </td>
                 </tr>
               ))}
