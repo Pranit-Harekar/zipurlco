@@ -2,7 +2,7 @@
 
 import { useFormState, useFormStatus } from 'react-dom'
 
-import { RegisterState, register } from '@/app/lib/actions'
+import { register, RegisterState } from '@/app/lib/actions'
 import { lusitana } from '@/app/ui/fonts'
 import { ArrowRightIcon } from '@heroicons/react/20/solid'
 import { AtSymbolIcon, ExclamationCircleIcon, KeyIcon } from '@heroicons/react/24/outline'
@@ -58,6 +58,33 @@ export default function SignUpForm() {
             <div id="password-error" aria-live="polite" aria-atomic="true">
               {state.errors?.password &&
                 state.errors.password.map((error: string) => (
+                  <Text size="2" color="red" key={error}>
+                    {error}
+                  </Text>
+                ))}
+            </div>
+          </div>
+          <div className="mt-4">
+            <label
+              className="mb-3 mt-5 block text-xs font-medium text-gray-900"
+              htmlFor="confirm-password"
+            >
+              Confirm Password
+            </label>
+            <TextField.Root
+              id="confirm-password"
+              type="password"
+              name="confirmPassword"
+              placeholder="Re-enter password"
+              minLength={8}
+            >
+              <TextField.Slot>
+                <KeyIcon height="16" width="16" />
+              </TextField.Slot>
+            </TextField.Root>
+            <div id="confirm-password-error" aria-live="polite" aria-atomic="true">
+              {state.errors?.confirmPassword &&
+                state.errors.confirmPassword.map((error: string) => (
                   <Text size="2" color="red" key={error}>
                     {error}
                   </Text>

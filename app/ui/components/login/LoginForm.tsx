@@ -2,7 +2,7 @@
 
 import { useFormState, useFormStatus } from 'react-dom'
 
-import { LoginState, authenticate, register } from '@/app/lib/actions'
+import { authenticate, LoginState, register } from '@/app/lib/actions'
 import { lusitana } from '@/app/ui/fonts'
 import { ArrowRightIcon } from '@heroicons/react/20/solid'
 import { AtSymbolIcon, ExclamationCircleIcon, KeyIcon } from '@heroicons/react/24/outline'

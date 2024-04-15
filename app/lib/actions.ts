@@ -290,26 +290,39 @@ const UserFormSchema = z.object({
   password: z.string().min(8, { message: 'Please enter a password.' }),
 })
 
+const RegisterFormSchema = z
+  .object({
+    email: z.string().email('Please enter a valid email.'),
+    password: z.string().min(8, { message: 'Please enter a password.' }),
+    confirmPassword: z.string().min(8, { message: 'Please confirm your password.' }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'Passwords do not match.',
+    path: ['confirmPassword'],
+  })
+
 export type RegisterState = {
   errors?: {
     email?: string[]
     password?: string[]
+    confirmPassword?: string[]
   }
   message?: string | null
 }
 
 export async function register(prevState: RegisterState, formData: FormData) {
   // Validate form using Zod
-  const validatedFields = UserFormSchema.safeParse({
+  const validatedFields = RegisterFormSchema.safeParse({
     email: formData.get('email'),
     password: formData.get('password'),
+    confirmPassword: formData.get('confirmPassword'),
   })
 
   // If form validation fails, return errors early. Otherwise, continue.
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: 'Missing Fields. Failed to register.',
+      message: 'Failed to Register.',
     }
   }
 
@@ -341,19 +354,32 @@ export async function register(prevState: RegisterState, formData: FormData) {
   redirect('/login')
 }
 
+const UpdateUserFormSchema = z
+  .object({
+    email: z.string().email('Please enter a valid email.'),
+    password: z.string().min(8, { message: 'Please enter a password.' }),
+    confirmPassword: z.string().min(8, { message: 'Please confirm your password.' }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'Passwords do not match.',
+    path: ['confirmPassword'],
+  })
+
 export type UpdateUserState = {
   errors?: {
     email?: string[]
     password?: string[]
+    confirmPassword?: string[]
   }
   message?: string | null
 }
 
 export async function updateUser(id: string, prevState: UpdateUserState, formData: FormData) {
   // Validate form using Zod
-  const validatedFields = UserFormSchema.safeParse({
+  const validatedFields = UpdateUserFormSchema.safeParse({
     email: formData.get('email'),
     password: formData.get('password'),
+    confirmPassword: formData.get('confirmPassword'),
   })
 
   // If form validation fails, return errors early. Otherwise, continue.
@@ -381,5 +407,7 @@ export async function updateUser(id: string, prevState: UpdateUserState, formDat
   }
 
   revalidatePath('/dashboard/settings')
-  redirect('/dashboard/settings')
+  return {
+    message: 'User updated successfully.',
+  }
 }
