@@ -8,9 +8,9 @@ import { Button, Dialog, DropdownMenu, Flex, Text } from '@radix-ui/themes'
 export function CreateLink() {
   return (
     <Link href="/dashboard/links/create">
-      <Button className="hidden md:block" size="2">
-        <PlusIcon className="h-5" />
-        <Text className="text-nowrap">Create Link</Text>
+      <Button size="2">
+        <PlusIcon className="size-5" />
+        <Text className="text-nowrap hidden sm:block">Create Link</Text>
       </Button>
     </Link>
   )
