@@ -2,7 +2,6 @@
 
 import { forwardRef } from 'react'
 
-import { XMarkIcon } from '@heroicons/react/24/outline'
 import { Dialog, DropdownMenu } from '@radix-ui/themes'
 
 type DialogItemProps = {
@@ -45,11 +44,6 @@ const DialogItem = forwardRef<HTMLDivElement, DialogItemProps>((props, forwarded
       </Dialog.Trigger>
       <Dialog.Content className="DialogContent" {...{ maxWidth }}>
         {children}
-        <Dialog.Close>
-          <button className="IconButton" aria-label="Close">
-            <XMarkIcon />
-          </button>
-        </Dialog.Close>
       </Dialog.Content>
     </Dialog.Root>
   )

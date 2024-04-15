@@ -31,11 +31,13 @@ export function DeleteLink({ id }: { id: string }) {
     <DialogItem triggerChildren="Delete" color="red" shortcut="⌘ ⌫" maxWidth="450px">
       <Dialog.Title>Delete Link</Dialog.Title>
       <Dialog.Description size="2" mb="4">
-        Are you sure you want to delete this link? This action cannot be undone.
+        Are you sure you want to delete this link? This action is permanent and cannot be undone.
       </Dialog.Description>
       <Flex gap="3" mt="4" justify="end">
         <Dialog.Close>
-          <Button variant="soft">Close</Button>
+          <Button variant="soft" color="gray">
+            Close
+          </Button>
         </Dialog.Close>
         <Dialog.Close>
           <form action={deleteInvoiceWithId}>
