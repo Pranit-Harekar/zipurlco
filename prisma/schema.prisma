@@ -22,8 +22,15 @@ model Link {
   target    String
   clicks    Int      @default(0)
   thumbnail String?
+  status    Status   @default(active)
   User      User?    @relation(fields: [userId], references: [id])
   userId    String?
+}
+
+enum Status {
+  active
+  pending
+  inactive
 }
 
 model User {

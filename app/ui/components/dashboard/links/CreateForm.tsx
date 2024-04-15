@@ -1,11 +1,12 @@
 'use client'
 
 import Link from 'next/link'
-import { useFormState } from 'react-dom'
+import { useFormState, useFormStatus } from 'react-dom'
 
 import { createLink, CreateLinkState } from '@/app/lib/actions'
-import { LinkIcon } from '@heroicons/react/24/outline'
-import { Button } from '@radix-ui/themes'
+import { LinkIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import { Button, IconButton, Spinner, TextField } from '@radix-ui/themes'
+import { LinkStatusInput } from './Status'
 
 export default function Form() {
   const initialState = { message: null, errors: {} }
@@ -15,22 +16,22 @@ export default function Form() {
     <form action={dispatch}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         {/* Link Target */}
-        <div className="mb-4">
-          <label htmlFor="target" className="mb-2 block text-sm font-medium">
+        <div className="mb-8">
+          <label htmlFor="target" className="mb-3 block text-sm font-medium">
             Enter or paste a URL
           </label>
           <div className="relative mt-2 rounded-md">
-            <div className="relative">
-              <input
-                id="target"
-                name="target"
-                type="url"
-                placeholder="https://example.com"
-                className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-                aria-describedby="target-error"
-              />
-              <LinkIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
-            </div>
+            <TextField.Root
+              id="target"
+              name="target"
+              type="url"
+              placeholder="https://example.com"
+              aria-describedby="target-error"
+            >
+              <TextField.Slot>
+                <LinkIcon height="16" width="16" />
+              </TextField.Slot>
+            </TextField.Root>
             <div id="target-error" aria-live="polite" aria-atomic="true">
               {state.errors?.target &&
                 state.errors.target.map((error: string) => (
@@ -41,6 +42,19 @@ export default function Form() {
             </div>
           </div>
         </div>
+
+        {/* Link Status */}
+        <div className="mb-4">
+          <LinkStatusInput />
+          <div id="status-error" aria-live="polite" aria-atomic="true">
+            {state.errors?.status &&
+              state.errors.status.map((error: string) => (
+                <p className="mt-2 text-sm text-red-500" key={error}>
+                  {error}
+                </p>
+              ))}
+          </div>
+        </div>
       </div>
       <div className="mt-6 flex justify-end gap-4">
         <Button
@@ -49,8 +63,19 @@ export default function Form() {
         >
           <Link href="/dashboard/links">Cancel</Link>
         </Button>
-        <Button type="submit">Create Link</Button>
+        <CreateLinkButton />
       </div>
     </form>
+  )
+}
+
+function CreateLinkButton() {
+  const { pending } = useFormStatus()
+
+  return (
+    <Button size="2" disabled={pending} type="submit">
+      Create Link
+      {pending && <Spinner loading />}
+    </Button>
   )
 }

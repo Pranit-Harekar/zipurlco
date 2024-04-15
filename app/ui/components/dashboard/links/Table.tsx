@@ -5,6 +5,7 @@ import { DeleteLink, UpdateLink } from '@/app/ui/components/dashboard/links/Butt
 import LinkStatus from '@/app/ui/components/dashboard/links/Status'
 import { EllipsisVerticalIcon, LinkIcon } from '@heroicons/react/24/outline'
 import { Avatar, DropdownMenu, IconButton, Link } from '@radix-ui/themes'
+
 import { CopyLink } from './ClientButtons'
 
 export default async function LinksTable({
@@ -40,7 +41,7 @@ export default async function LinksTable({
                       {link.target}
                     </p>
                   </div>
-                  <LinkStatus status={'active'} />
+                  <LinkStatus status={link.status} />
                 </div>
                 <div className="flex w-full items-center justify-between pt-4">
                   <div>
@@ -116,7 +117,7 @@ export default async function LinksTable({
                     {formatDateToLocal(link.createdAt.toString())}
                   </td>
                   <td className="whitespace-nowrap px-3 py-3">
-                    <LinkStatus status={'active'} />
+                    <LinkStatus status={link.status} />
                   </td>
                   <td className="whitespace-nowrap py-3 pl-6 pr-3">
                     <DropdownMenu.Root modal>

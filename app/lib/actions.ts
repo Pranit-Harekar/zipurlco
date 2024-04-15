@@ -126,6 +126,7 @@ export async function fetchLinksPages(query: string) {
 export type CreateLinkState = {
   errors?: {
     target?: string[]
+    status?: string[]
   }
   message?: string | null
 }
@@ -137,12 +138,16 @@ const CreateLinkFormSchema = z.object({
       invalid_type_error: 'Please enter a valid URL.',
     })
     .min(1, 'Please enter a URL.'),
+  status: z.enum(['active', 'inactive', 'pending'], {
+    required_error: 'Please select a status.',
+  }),
 })
 
 export async function createLink(prevState: CreateLinkState, formData: FormData) {
   // Validate form using Zod
   const validatedFields = CreateLinkFormSchema.safeParse({
     target: formData.get('target'),
+    status: formData.get('status'),
   })
 
   // If form validation fails, return errors early. Otherwise, continue.
@@ -153,7 +158,7 @@ export async function createLink(prevState: CreateLinkState, formData: FormData)
     }
   }
 
-  const { target } = validatedFields.data
+  const { target, status } = validatedFields.data
   const ogData = await getOGData(target)
   const userId = (await getCurrentUser()).id
 
@@ -161,6 +166,7 @@ export async function createLink(prevState: CreateLinkState, formData: FormData)
     await prisma.link.create({
       data: {
         target,
+        status,
         alias: nanoid(10),
         thumbnail: ogData && ogData.image,
         userId,

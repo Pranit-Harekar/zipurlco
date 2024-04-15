@@ -1,27 +1,45 @@
-import clsx from 'clsx'
+import { ClockIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import { Status } from '@prisma/client'
+import { Badge, Text, Radio } from '@radix-ui/themes'
 
-import { CheckIcon, XMarkIcon } from '@heroicons/react/24/outline'
+export default function LinkStatus({ status }: { status: Status }) {
+  switch (status) {
+    case 'active': {
+      return <Badge color="green">Active</Badge>
+    }
+    case 'inactive': {
+      return <Badge color="gray">Inactive</Badge>
+    }
+    case 'pending': {
+      return <Badge color="orange">Pending</Badge>
+    }
+  }
+}
 
-export default function LinkStatus({ status }: { status: string }) {
+export const LinkStatusInput = () => {
+  const data = {
+    [Status.active]: { label: 'Active', color: 'green', icon: <CheckIcon className="size-4" /> },
+    [Status.pending]: { label: 'Pending', color: 'orange', icon: <ClockIcon className="size-4" /> },
+    [Status.inactive]: { label: 'Inactive', color: 'gray', icon: <XMarkIcon className="size-4" /> },
+  }
+
   return (
-    <span
-      className={clsx('inline-flex items-center rounded-full px-2 py-1 text-xs', {
-        'bg-gray-100 text-gray-500': status === 'inactive',
-        'bg-green-500 text-white': status === 'active',
-      })}
-    >
-      {status === 'inactive' ? (
-        <>
-          Inactive
-          <XMarkIcon className="ml-1 w-4 text-gray-500" />
-        </>
-      ) : null}
-      {status === 'active' ? (
-        <>
-          Active
-          <CheckIcon className="ml-1 w-4 text-white" />
-        </>
-      ) : null}
-    </span>
+    <fieldset>
+      <label htmlFor="status" className="mb-3 block text-sm font-medium">
+        Set the link status
+      </label>
+      <div className="flex flex-col sm:flex-row gap-4" aria-describedby="status-error">
+        {Object.entries(data).map(([key, value]) => (
+          <div className="flex items-center gap-2" key={key}>
+            <Text as="label" size="2" className="flex gap-1 cursor-pointer">
+              <Radio id={key} name="status" value={key} defaultChecked={key === Status.active} />
+              <Badge color={value.color as any}>
+                {value.label} {value.icon}
+              </Badge>
+            </Text>
+          </div>
+        ))}
+      </div>
+    </fieldset>
   )
 }

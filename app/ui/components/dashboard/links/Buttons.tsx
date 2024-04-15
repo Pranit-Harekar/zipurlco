@@ -3,15 +3,17 @@ import Link from 'next/link'
 import { deleteLink } from '@/app/lib/actions'
 import { DialogItem } from '@/app/ui/components/DialogItem'
 import { PlusIcon } from '@heroicons/react/24/outline'
-import { Button, Dialog, DropdownMenu, Flex, Text } from '@radix-ui/themes'
+import { Button, Dialog, DropdownMenu, Flex, Text, Tooltip } from '@radix-ui/themes'
 
 export function CreateLink() {
   return (
     <Link href="/dashboard/links/create">
-      <Button size="2">
-        <PlusIcon className="size-5" />
-        <Text className="text-nowrap hidden sm:block">Create Link</Text>
-      </Button>
+      <Tooltip content="Create a new link">
+        <Button size="2">
+          <PlusIcon className="size-5" />
+          <Text className="text-nowrap hidden sm:block">Create Link</Text>
+        </Button>
+      </Tooltip>
     </Link>
   )
 }
