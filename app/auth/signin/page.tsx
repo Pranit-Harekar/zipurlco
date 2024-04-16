@@ -1,11 +1,11 @@
 import Link from 'next/link'
 
-import LoginForm from '@/app/ui/components/login/LoginForm'
+import Form from '@/app/ui/components/auth/SignInForm'
 import Logo from '@/app/ui/components/Logo'
 
-import { WIPCallout } from '../ui/components/WIPCallout'
+import { WIPCallout } from '../../ui/components/WIPCallout'
 
-export default function LoginPage() {
+export default function Page() {
   return (
     <main className="flex items-center justify-center md:h-screen">
       <div className="relative mx-auto flex w-full max-w-[400px] flex-col space-y-2.5 p-4 md:-mt-32">
@@ -15,7 +15,7 @@ export default function LoginPage() {
             <Logo />
           </Link>
         </div>
-        <LoginForm />
+        <Form />
       </div>
     </main>
   )

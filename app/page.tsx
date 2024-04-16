@@ -13,10 +13,10 @@ export default function Page() {
       <div className="flex flex-row h-20 items-center justify-between rounded-lg bg-blue-500 p-4">
         <ZipUrlLogo />
         <div className="gap-6 hidden lg:flex pr-4">
-          <Link href="/login" size="3">
-            <Text className="text-white">Login</Text>
+          <Link href="/auth/signin" size="3">
+            <Text className="text-white">Sign In</Text>
           </Link>
-          <Link href="/signup" size="3">
+          <Link href="/auth/signup" size="3">
             <Text className="text-white">Sign Up</Text>
           </Link>
         </div>
@@ -30,13 +30,13 @@ export default function Page() {
             </DropdownMenu.Trigger>
             <DropdownMenu.Content>
               <DropdownMenu.Item>
-                <Link href="/login" size="2">
-                  <Text>Login</Text>
+                <Link href="/auth/signin" size="2">
+                  <Text>Signin</Text>
                 </Link>
               </DropdownMenu.Item>
               <DropdownMenu.Separator />
               <DropdownMenu.Item>
-                <Link href="/signup" size="2">
+                <Link href="/auth/signup" size="2">
                   <Text>Sign Up</Text>
                 </Link>
               </DropdownMenu.Item>

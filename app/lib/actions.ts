@@ -242,13 +242,14 @@ export async function deleteLink(id: string) {
     await prisma.link.delete({
       where: { id, userId },
     })
-    revalidatePath('/dashboard/links')
-    redirect('/dashboard/links')
   } catch (error) {
     return {
       message: 'Failed to delete link.',
     }
   }
+
+  revalidatePath('/dashboard/links')
+  redirect('/dashboard/links')
 }
 
 export async function getLinkById(id: string) {
@@ -291,81 +292,40 @@ export async function getUserById(id: string): Promise<User | null> {
   }
 }
 
-export type LoginState =
+const AuthSchema = z.object({
+  email: z.string().email('Please enter a valid email.'),
+})
+
+export type AuthState =
   | {
       errors?: {
         email?: string[]
-        password?: string[]
       }
       message?: string | null
     }
   | undefined
 
-export async function authenticate(prevState: LoginState, formData: FormData) {
-  // Validate form using Zod
-  const validatedFields = UserFormSchema.safeParse({
+export async function authenticate(prevState: AuthState, formData: FormData) {
+  const validatedFields = AuthSchema.safeParse({
     email: formData.get('email'),
-    password: formData.get('password'),
   })
 
-  // If form validation fails, return errors early. Otherwise, continue.
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: 'Missing Fields. Failed to login.',
     }
   }
 
-  try {
-    await signIn('credentials', formData)
-  } catch (error) {
-    if (error instanceof AuthError) {
-      switch (error.type) {
-        case 'CredentialsSignin':
-          return {
-            message: 'Invalid credentials.',
-          }
-        default:
-          return {
-            message: 'Something went wrong.',
-          }
-      }
-    }
-    throw error
-  }
+  await signIn('resend', {
+    email: validatedFields.data.email,
+    redirectTo: '/dashboard',
+  })
 }
 
-const UserFormSchema = z.object({
-  email: z.string().email('Please enter a valid email.'),
-  password: z.string().min(8, { message: 'Please enter a password.' }),
-})
-
-const RegisterFormSchema = z
-  .object({
-    email: z.string().email('Please enter a valid email.'),
-    password: z.string().min(8, { message: 'Please enter a password.' }),
-    confirmPassword: z.string().min(8, { message: 'Please confirm your password.' }),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: 'Passwords do not match.',
-    path: ['confirmPassword'],
-  })
-
-export type RegisterState = {
-  errors?: {
-    email?: string[]
-    password?: string[]
-    confirmPassword?: string[]
-  }
-  message?: string | null
-}
-
-export async function register(prevState: RegisterState, formData: FormData) {
+export async function register(prevState: AuthState, formData: FormData) {
   // Validate form using Zod
-  const validatedFields = RegisterFormSchema.safeParse({
+  const validatedFields = AuthSchema.safeParse({
     email: formData.get('email'),
-    password: formData.get('password'),
-    confirmPassword: formData.get('confirmPassword'),
   })
 
   // If form validation fails, return errors early. Otherwise, continue.
@@ -376,60 +336,28 @@ export async function register(prevState: RegisterState, formData: FormData) {
     }
   }
 
-  const { email, password } = validatedFields.data
+  const { email } = validatedFields.data
 
-  try {
-    // Check if user already exists
-    if (await getUserByEmail(email)) {
-      return {
-        message: 'User already exists. Please login',
-      }
-    }
-
-    // Create user
-    await prisma.user.create({
-      data: {
-        email: email.toString(),
-        password: await bcrypt.hash(password.toString(), 10),
-      },
-    })
-  } catch (error) {
+  // Check if user already exists
+  if (await getUserByEmail(email)) {
     return {
-      message: 'Failed to register.',
+      message: 'User already exists. Please login',
     }
   }
 
-  // Redirect to login page
-  revalidatePath('/login')
-  redirect('/login')
+  await signIn('resend', {
+    email,
+    redirectTo: '/dashboard',
+  })
 }
 
-const UpdateUserFormSchema = z
-  .object({
-    email: z.string().email('Please enter a valid email.'),
-    password: z.string().min(8, { message: 'Please enter a password.' }),
-    confirmPassword: z.string().min(8, { message: 'Please confirm your password.' }),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: 'Passwords do not match.',
-    path: ['confirmPassword'],
-  })
-
-export type UpdateUserState = {
-  errors?: {
-    email?: string[]
-    password?: string[]
-    confirmPassword?: string[]
-  }
-  message?: string | null
-}
+const UpdateUserFormSchema = AuthSchema
+export type UpdateUserState = AuthState
 
 export async function updateUser(id: string, prevState: UpdateUserState, formData: FormData) {
   // Validate form using Zod
   const validatedFields = UpdateUserFormSchema.safeParse({
     email: formData.get('email'),
-    password: formData.get('password'),
-    confirmPassword: formData.get('confirmPassword'),
   })
 
   // If form validation fails, return errors early. Otherwise, continue.
@@ -440,14 +368,13 @@ export async function updateUser(id: string, prevState: UpdateUserState, formDat
     }
   }
 
-  const { email, password } = validatedFields.data
+  const { email } = validatedFields.data
 
   try {
     await prisma.user.update({
       where: { id },
       data: {
         email: email.toString(),
-        password: await bcrypt.hash(password.toString(), 10),
       },
     })
   } catch (error) {

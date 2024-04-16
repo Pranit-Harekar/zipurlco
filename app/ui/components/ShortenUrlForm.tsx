@@ -58,7 +58,7 @@ export default function ShortenUrlForm() {
           Create a free account
         </Link>{' '}
         or{' '}
-        <Link href="/login" underline="always">
+        <Link href="/auth/signin" underline="always">
           login
         </Link>{' '}
         to get started.
