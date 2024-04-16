@@ -123,7 +123,7 @@ export async function fetchLinksPages(query: string) {
   return Math.ceil(totalLinks / ITEMS_PER_PAGE)
 }
 
-export type CreateLinkState = {
+export type LinkState = {
   errors?: {
     target?: string[]
     status?: string[]
@@ -131,7 +131,7 @@ export type CreateLinkState = {
   message?: string | null
 }
 
-const CreateLinkFormSchema = z.object({
+const LinkFormSchema = z.object({
   target: z
     .string({
       required_error: 'Please enter a URL.',
@@ -143,9 +143,9 @@ const CreateLinkFormSchema = z.object({
   }),
 })
 
-export async function createLink(prevState: CreateLinkState, formData: FormData) {
+export async function createLink(prevState: LinkState, formData: FormData) {
   // Validate form using Zod
-  const validatedFields = CreateLinkFormSchema.safeParse({
+  const validatedFields = LinkFormSchema.safeParse({
     target: formData.get('target'),
     status: formData.get('status'),
   })
@@ -182,15 +182,47 @@ export async function createLink(prevState: CreateLinkState, formData: FormData)
   redirect('/dashboard/links')
 }
 
-export async function updateLink(id: string, formData: FormData) {
-  const { target } = Object.fromEntries(formData)
+const UpdateLinkFormSchema = z.object({
+  target: z
+    .string({
+      required_error: 'Please enter a URL.',
+      invalid_type_error: 'Please enter a valid URL.',
+    })
+    .min(1, 'Please enter a URL.'),
+  status: z.enum(['active', 'inactive', 'pending'], {
+    required_error: 'Please select a status.',
+  }),
+  resetCount: z.string().nullish(),
+})
+
+export async function updateLink(id: string, prevState: LinkState, formData: FormData) {
+  // Validate form using Zod
+  const validatedFields = UpdateLinkFormSchema.safeParse({
+    target: formData.get('target'),
+    status: formData.get('status'),
+    resetCount: formData.get('resetCount'),
+  })
+
+  // If form validation fails, return errors early. Otherwise, continue.
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. Failed to update Link.',
+    }
+  }
+
+  const { target, status, resetCount } = validatedFields.data
+  const ogData = await getOGData(target)
   const userId = (await getCurrentUser()).id
 
   try {
     await prisma.link.update({
       where: { id, userId },
       data: {
-        target: target.toString(),
+        target,
+        status,
+        thumbnail: ogData && ogData.image,
+        clicks: resetCount ? 0 : undefined,
       },
     })
   } catch (error) {
@@ -216,6 +248,22 @@ export async function deleteLink(id: string) {
     return {
       message: 'Failed to delete link.',
     }
+  }
+}
+
+export async function getLinkById(id: string) {
+  const userId = (await getCurrentUser()).id
+
+  try {
+    return await prisma.link.findFirst({
+      where: {
+        id,
+        userId,
+      },
+    })
+  } catch (error) {
+    console.error('Failed to fetch link:', error)
+    return null
   }
 }
 
@@ -285,10 +333,6 @@ export async function authenticate(prevState: LoginState, formData: FormData) {
     }
     throw error
   }
-
-  // Redirect to dashboard page
-  // revalidatePath('/dashboard')
-  // redirect('/dashboard')
 }
 
 const UserFormSchema = z.object({

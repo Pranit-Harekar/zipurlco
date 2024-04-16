@@ -1,6 +1,6 @@
-import { ClockIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import { CheckIcon, ClockIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { Status } from '@prisma/client'
-import { Badge, Text, Radio } from '@radix-ui/themes'
+import { Badge, Radio, Text } from '@radix-ui/themes'
 
 export default function LinkStatus({ status }: { status: Status }) {
   switch (status) {
@@ -16,7 +16,8 @@ export default function LinkStatus({ status }: { status: Status }) {
   }
 }
 
-export const LinkStatusInput = () => {
+export const LinkStatusInput = ({ defaultValue }: { defaultValue?: Status }) => {
+  const defaultStatus = defaultValue || Status.active
   const data = {
     [Status.active]: { label: 'Active', color: 'green', icon: <CheckIcon className="size-4" /> },
     [Status.pending]: { label: 'Pending', color: 'orange', icon: <ClockIcon className="size-4" /> },
@@ -32,7 +33,7 @@ export const LinkStatusInput = () => {
         {Object.entries(data).map(([key, value]) => (
           <div className="flex items-center gap-2" key={key}>
             <Text as="label" size="2" className="flex gap-1 cursor-pointer">
-              <Radio id={key} name="status" value={key} defaultChecked={key === Status.active} />
+              <Radio id={key} name="status" value={key} defaultChecked={key === defaultStatus} />
               <Badge color={value.color as any}>
                 {value.label} {value.icon}
               </Badge>

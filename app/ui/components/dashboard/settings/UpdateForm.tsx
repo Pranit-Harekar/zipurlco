@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useFormState, useFormStatus } from 'react-dom'
 import toast, { Toaster } from 'react-hot-toast'
 
@@ -13,6 +13,8 @@ export default function Form({ user }: { user: User }) {
   const initialState = { message: null, errors: {} }
   const updateUserWithId = updateUser.bind(null, user.id)
   const [state, dispatch] = useFormState<UpdateUserState, FormData>(updateUserWithId, initialState)
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const { email } = user
 
   useEffect(() => {
@@ -70,7 +72,7 @@ export default function Form({ user }: { user: User }) {
             <TextField.Root
               id="password"
               name="password"
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               placeholder="********"
               aria-describedby="password-error"
             >
@@ -78,7 +80,15 @@ export default function Form({ user }: { user: User }) {
                 <KeyIcon height="16" width="16" />
               </TextField.Slot>
               <TextField.Slot pr="3">
-                <IconButton size="2" variant="ghost" type="reset" color="gray">
+                <IconButton
+                  size="2"
+                  variant="ghost"
+                  color="gray"
+                  type="button"
+                  onClick={() => {
+                    setShowPassword(!showPassword)
+                  }}
+                >
                   <EyeIcon height="16" width="16" />
                 </IconButton>
               </TextField.Slot>
@@ -102,7 +112,7 @@ export default function Form({ user }: { user: User }) {
             <TextField.Root
               id="confirm-password"
               name="confirmPassword"
-              type="password"
+              type={showConfirmPassword ? 'text' : 'password'}
               placeholder="********"
               aria-describedby="confirm-password-error"
             >
@@ -110,7 +120,15 @@ export default function Form({ user }: { user: User }) {
                 <KeyIcon height="16" width="16" />
               </TextField.Slot>
               <TextField.Slot pr="3">
-                <IconButton size="2" variant="ghost" type="reset" color="gray">
+                <IconButton
+                  size="2"
+                  variant="ghost"
+                  color="gray"
+                  type="button"
+                  onClick={() => {
+                    setShowConfirmPassword(!showConfirmPassword)
+                  }}
+                >
                   <EyeIcon height="16" width="16" />
                 </IconButton>
               </TextField.Slot>

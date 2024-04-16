@@ -4,7 +4,7 @@ import Breadcrumbs from '@/app/ui/components/dashboard/links/Breadcrumbs'
 import Form from '@/app/ui/components/dashboard/links/CreateForm'
 
 export const metadata: Metadata = {
-  title: 'Create Invoices',
+  title: 'Create Links',
 }
 
 export default async function Page() {

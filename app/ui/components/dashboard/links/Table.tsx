@@ -3,8 +3,8 @@ import { fqdn } from '@/app/lib/fqdn'
 import { formatDateToLocal } from '@/app/lib/utils'
 import { DeleteLink, UpdateLink } from '@/app/ui/components/dashboard/links/Buttons'
 import LinkStatus from '@/app/ui/components/dashboard/links/Status'
-import { EllipsisVerticalIcon, LinkIcon } from '@heroicons/react/24/outline'
-import { Avatar, DropdownMenu, IconButton, Link } from '@radix-ui/themes'
+import { CursorArrowRippleIcon, EllipsisVerticalIcon, LinkIcon } from '@heroicons/react/24/outline'
+import { Avatar, DropdownMenu, Flex, IconButton, Link, Text } from '@radix-ui/themes'
 
 import { CopyLink } from './ClientButtons'
 
@@ -24,29 +24,38 @@ export default async function LinksTable({
           <div className="md:hidden">
             {links?.map((link) => (
               <div key={link.id} className="mb-2 w-full rounded-md bg-white p-4">
-                <div className="flex items-center justify-between border-b pb-4">
-                  <div>
-                    <div className="mb-2 flex items-center gap-1">
-                      <Avatar
-                        src={link.thumbnail ?? undefined}
-                        fallback={<LinkIcon className="w-6 h-6" />}
-                        size="4"
-                        alt={`${link.alias} thumbnail`}
-                      />
-                      <p className="truncate max-w-40 md:max-w-44 lg:max-w-56 xl:max-w-72">
-                        {fqdn(link)}
-                      </p>
+                <div className="flex items-center justify-between border-b pb-4 gap-2">
+                  <div className="mb-2 flex items-center gap-2">
+                    <Avatar
+                      src={link.thumbnail ?? undefined}
+                      fallback={<LinkIcon className="w-6 h-6" />}
+                      size="4"
+                      alt={`${link.alias} thumbnail`}
+                    />
+                    <div className="flex flex-col gap-2 truncate max-w-44 md:max-w-56 lg:max-w-72 xl:max-w-80">
+                      <Text size="3" weight="medium">
+                        <Link href={`/${link.alias}`} target="_blank">
+                          {fqdn(link)}
+                        </Link>
+                      </Text>
+                      <Text size="2">
+                        <Link href={link.target} target="_blank" color="gray">
+                          {link.target}
+                        </Link>
+                      </Text>
                     </div>
-                    <p className="text-sm text-gray-500 truncate max-w-44 md:max-w-56 lg:max-w-72 xl:max-w-80">
-                      {link.target}
-                    </p>
                   </div>
                   <LinkStatus status={link.status} />
                 </div>
                 <div className="flex w-full items-center justify-between pt-4">
-                  <div>
-                    <p className="text-xl font-medium">{link.clicks}</p>
-                    <p>{formatDateToLocal(link.createdAt.toString())}</p>
+                  <div className="flex flex-col gap-2">
+                    <Text size="3" weight="bold" className="flex justify-start items-center gap-1">
+                      <CursorArrowRippleIcon className="size-4" />
+                      {link.clicks}
+                    </Text>
+                    <Text size="2" color="gray">
+                      {formatDateToLocal(link.createdAt.toString())}
+                    </Text>
                   </div>
                   <DropdownMenu.Root modal>
                     <DropdownMenu.Trigger>
@@ -102,15 +111,19 @@ export default async function LinksTable({
                         size="4"
                         alt={`${link.alias} thumbnail`}
                       />
-                      <Link href={`/${link.alias}`} target="_blank">
-                        {fqdn(link)}
-                      </Link>
+                      <Text weight="medium">
+                        <Link href={`/${link.alias}`} target="_blank">
+                          {fqdn(link)}
+                        </Link>
+                      </Text>
                     </div>
                   </td>
                   <td className="whitespace-nowrap px-3 py-3 truncate max-w-44 md:max-w-56 lg:max-w-72 xl:max-w-80">
-                    <Link href={link.target} target="_blank" underline="always" color="gray">
-                      {link.target}
-                    </Link>
+                    <Text size="2">
+                      <Link href={link.target} target="_blank" color="gray">
+                        {link.target}
+                      </Link>
+                    </Text>
                   </td>
                   <td className="whitespace-nowrap px-3 py-3">{link.clicks}</td>
                   <td className="whitespace-nowrap px-3 py-3">
@@ -119,7 +132,7 @@ export default async function LinksTable({
                   <td className="whitespace-nowrap px-3 py-3">
                     <LinkStatus status={link.status} />
                   </td>
-                  <td className="whitespace-nowrap py-3 pl-6 pr-3">
+                  <td className="whitespace-nowrap py-3 pl-2 pr-3">
                     <DropdownMenu.Root modal>
                       <DropdownMenu.Trigger>
                         <IconButton variant="surface" color="gray">

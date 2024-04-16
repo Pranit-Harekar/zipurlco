@@ -3,14 +3,16 @@
 import Link from 'next/link'
 import { useFormState, useFormStatus } from 'react-dom'
 
-import { createLink, LinkState } from '@/app/lib/actions'
+import { LinkState, updateLink } from '@/app/lib/actions'
 import { LinkStatusInput } from '@/app/ui/components/dashboard/links/Status'
 import { LinkIcon } from '@heroicons/react/24/outline'
-import { Button, Spinner, TextField } from '@radix-ui/themes'
+import { Link as LinkModel } from '@prisma/client'
+import { Button, Checkbox, Flex, Spinner, Text, TextField, Tooltip } from '@radix-ui/themes'
 
-export default function Form() {
+export default function Form({ link }: { link: LinkModel }) {
   const initialState = { message: null, errors: {} }
-  const [state, dispatch] = useFormState<LinkState, FormData>(createLink, initialState)
+  const updateLinkWithId = updateLink.bind(null, link.id)
+  const [state, dispatch] = useFormState<LinkState, FormData>(updateLinkWithId, initialState)
 
   return (
     <form action={dispatch}>
@@ -27,6 +29,7 @@ export default function Form() {
               type="url"
               placeholder="https://example.com"
               aria-describedby="target-error"
+              defaultValue={link.target}
             >
               <TextField.Slot>
                 <LinkIcon height="16" width="16" />
@@ -45,7 +48,7 @@ export default function Form() {
 
         {/* Link Status */}
         <div>
-          <LinkStatusInput />
+          <LinkStatusInput defaultValue={link.status} />
           <div id="status-error" aria-live="polite" aria-atomic="true">
             {state.errors?.status &&
               state.errors.status.map((error: string) => (
@@ -56,6 +59,20 @@ export default function Form() {
           </div>
         </div>
 
+        {/* Reset Count */}
+        <div>
+          <label htmlFor="resetCount" className="mb-3 block text-sm font-medium">
+            Analytics
+          </label>
+          <Tooltip content="Resets analytics data such as clicks">
+            <Text as="label" size="2">
+              <Flex gap="2">
+                <Checkbox name="resetCount" id="resetCount" />
+                Reset all analytics data
+              </Flex>
+            </Text>
+          </Tooltip>
+        </div>
         <div className="flex justify-end gap-4">
           <Button
             variant="outline"
@@ -63,19 +80,19 @@ export default function Form() {
           >
             <Link href="/dashboard/links">Cancel</Link>
           </Button>
-          <CreateLinkButton />
+          <UpdateLinkButton />
         </div>
       </div>
     </form>
   )
 }
 
-function CreateLinkButton() {
+function UpdateLinkButton() {
   const { pending } = useFormStatus()
 
   return (
     <Button size="2" disabled={pending} type="submit">
-      Create Link
+      Update Link
       {pending && <Spinner loading />}
     </Button>
   )
