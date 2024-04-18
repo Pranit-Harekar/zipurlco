@@ -5,9 +5,9 @@ import { useFormState, useFormStatus } from 'react-dom'
 import toast, { Toaster } from 'react-hot-toast'
 
 import { updateUser, UpdateUserState } from '@/app/lib/actions'
-import { AtSymbolIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import { AtSymbolIcon } from '@heroicons/react/24/outline'
 import { User } from '@prisma/client'
-import { Button, IconButton, Spinner, TextField } from '@radix-ui/themes'
+import { Button, Spinner, TextField } from '@radix-ui/themes'
 
 export default function Form({ user }: { user: User }) {
   const initialState = { message: null, errors: {} }
