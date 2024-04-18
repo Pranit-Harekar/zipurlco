@@ -1,9 +1,10 @@
 'use client'
 
-import { KeyIcon, MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import { TextField, IconButton } from '@radix-ui/themes'
-import { useSearchParams, usePathname, useRouter } from 'next/navigation'
-import { useDebouncedCallback } from 'use-debounce'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useDebouncedCallback } from 'use-debounce';
+
+import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { TextField } from '@radix-ui/themes';
 
 export default function Search({ placeholder }: { placeholder: string }) {
   const searchParams = useSearchParams()
@@ -28,10 +29,10 @@ export default function Search({ placeholder }: { placeholder: string }) {
       </label>
       <TextField.Root
         {...{ placeholder }}
-        id="password"
-        name="password"
-        type="password"
-        aria-describedby="password-error"
+        id="search"
+        name="search"
+        type="text"
+        aria-describedby="search-error"
         onChange={(e) => {
           handleSearch(e.target.value)
         }}

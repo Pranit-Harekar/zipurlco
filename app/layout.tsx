@@ -5,6 +5,7 @@ import { Metadata } from 'next'
 
 import { inter } from '@/app/ui/fonts'
 import { Theme } from '@radix-ui/themes'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 
 export const metadata: Metadata = {
   title: {
@@ -22,6 +23,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${inter.className} antialiased`}>
         <Theme accentColor="blue" appearance="light">
           {children}
+          <SpeedInsights />
         </Theme>
       </body>
     </html>

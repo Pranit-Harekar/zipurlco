@@ -46,11 +46,6 @@ export default function Form({ user }: { user: User }) {
               <TextField.Slot>
                 <AtSymbolIcon height="16" width="16" />
               </TextField.Slot>
-              <TextField.Slot pr="3">
-                <IconButton size="2" variant="ghost" type="reset" color="gray">
-                  <XMarkIcon height="16" width="16" />
-                </IconButton>
-              </TextField.Slot>
             </TextField.Root>
             <div id="email-error" aria-live="polite" aria-atomic="true">
               {state?.errors?.email &&
@@ -63,12 +58,12 @@ export default function Form({ user }: { user: User }) {
           </div>
         </div>
 
-        <div className="mt-6 flex gap-4 justify-end">
+        {/* <div className="mt-6 flex gap-4 justify-end">
           <Button type="reset" variant="outline">
             Reset
           </Button>
           <UpdateButton />
-        </div>
+        </div> */}
       </div>
       <Toaster />
     </form>
